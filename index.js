@@ -1,6 +1,6 @@
-import { ApolloServer } from '@apollo/server';
-import { startStandaloneServer } from '@apollo/server/standalone';
-import _db from './_db.js';
+import { ApolloServer } from "@apollo/server";
+import { startStandaloneServer } from "@apollo/server/standalone";
+import _db from "./_db.js";
 
 const typeDefs = `#graphql 
     type Game {
@@ -33,34 +33,31 @@ const typeDefs = `#graphql
     }
 `;
 
-
 const resolvers = {
     Query: {
-        games(){
+        author(_, args) {
+            console.log("args", args);
+            return _db.authors.find((author) => author.name === args.name);
+        },
+        games() {
             return _db.games;
         },
 
-        reviews(){
+        reviews() {
             return _db.reviews;
         },
 
-        authors(){
+        authors() {
             return _db.authors;
         },
 
         // singles
-        review(parent, args, context){
-           console.log(args.id);
-           return _db.reviews.find(review => review.id === args.id);
-        },
-
-        author(_, args){
-            console.log('args', args)
-            return _db.authors.find(author => author.name === args.name);
+        review(parent, args, context) {
+            console.log(args.id);
+            return _db.reviews.find((review) => review.id === args.id);
         }
     }
-}
-
+};
 
 const server = new ApolloServer({
     typeDefs,
@@ -68,7 +65,7 @@ const server = new ApolloServer({
 });
 
 const { url } = await startStandaloneServer(server, {
-    listen: { port: 4000 },
+    listen: { port: 4000 }
 });
 
 console.log(`Server ready at port: ` + 4000);
