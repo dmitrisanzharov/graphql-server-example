@@ -39,9 +39,11 @@ const resolvers = {
         games(){
             return _db.games;
         },
+
         reviews(){
             return _db.reviews;
         },
+
         authors(){
             return _db.authors;
         },
@@ -53,6 +55,7 @@ const resolvers = {
         },
 
         author(_, args){
+            console.log('args', args)
             return _db.authors.find(author => author.name === args.name);
         }
     }
