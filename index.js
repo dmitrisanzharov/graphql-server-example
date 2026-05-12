@@ -14,6 +14,7 @@ const typeDefs = `#graphql
         id: ID!
         rating: Int!
         content: String!
+        game_id: ID!
     }
 
     type Author {
