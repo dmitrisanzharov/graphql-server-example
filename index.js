@@ -15,12 +15,14 @@ const typeDefs = `#graphql
         rating: Int!
         content: String!
         game_id: ID!
+        author_id: ID!
     }
 
     type Author {
         id: ID!
         name: String!
         verified: Boolean!
+        reviews: [Review!]
     }
 
     type Query {
@@ -39,6 +41,7 @@ const typeDefs = `#graphql
 const resolvers = {
     Query: {
         author(_, args) {
+            
             console.log("args", args);
             return _db.authors.find((author) => author.name === args.name);
         },
@@ -68,6 +71,12 @@ const resolvers = {
         reviews(parent){
             console.log("parent", parent);
             return _db.reviews.filter((review) => review.game_id === parent.id);
+        }
+    },
+    Author: {
+        reviews(parent){
+            console.log("parent", parent);
+            return _db.reviews.filter((review) => review.author_id === parent.id);
         }
     }
 };
