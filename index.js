@@ -41,7 +41,6 @@ const typeDefs = `#graphql
 const resolvers = {
     Query: {
         author(_, args) {
-            
             console.log("args", args);
             return _db.authors.find((author) => author.name === args.name);
         },
