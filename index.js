@@ -16,6 +16,7 @@ const typeDefs = `#graphql
         content: String!
         game_id: ID!
         author_id: ID!
+        game: Game!
     }
 
     type Author {
@@ -66,16 +67,25 @@ const resolvers = {
             return _db.games.find((game) => game.id === args.id);
         }
     },
+
     Game: {
         reviews(parent){
             console.log("parent", parent);
             return _db.reviews.filter((review) => review.game_id === parent.id);
         }
     },
+
     Author: {
         reviews(parent){
             console.log("parent", parent);
             return _db.reviews.filter((review) => review.author_id === parent.id);
+        }
+    },
+    
+    Review: {
+        game(parent){
+            console.log("parent", parent);
+            return _db.games.find((game) => game.id === parent.game_id);
         }
     }
 };
