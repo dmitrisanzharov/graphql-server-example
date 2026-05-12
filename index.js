@@ -7,6 +7,7 @@ const typeDefs = `#graphql
         id: ID!
         title: String!
         platforms: [String!]!
+        reviews: [Review!]
     }
 
     type Review {
@@ -19,6 +20,7 @@ const typeDefs = `#graphql
         id: ID!
         name: String!
         verified: Boolean!
+        reviews: [Review!]
     }
 
     type Query {
@@ -30,6 +32,7 @@ const typeDefs = `#graphql
         # with vars
         review(id: ID!): Review
         author(name: String!): Author
+        game(id: ID!): Game
     }
 `;
 
@@ -43,6 +46,7 @@ const resolvers = {
             return _db.games;
         },
 
+
         reviews() {
             return _db.reviews;
         },
@@ -53,8 +57,17 @@ const resolvers = {
 
         // singles
         review(parent, args, context) {
-            console.log(args.id);
             return _db.reviews.find((review) => review.id === args.id);
+        },
+
+        game(parent, args, context) {
+            return _db.games.find((game) => game.id === args.id);
+        }
+    },
+    Game: {
+        reviews(parent){
+            console.log("parent", parent);
+            return _db.reviews.filter((review) => review.game_id === parent.id);
         }
     }
 };
@@ -69,3 +82,4 @@ const { url } = await startStandaloneServer(server, {
 });
 
 console.log(`Server ready at port: ` + 4000);
+
