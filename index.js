@@ -42,10 +42,12 @@ const typeDefs = `#graphql
 
     type Mutation {
         deleteGame(id: ID!): [Game]
+        addGame(id: ID!, title: String!, platforms: [String!]!): [Game]
     }
 `;
 
 const resolvers = {
+
     Query: {
         author(_, args) {
             console.log('args', args);
@@ -103,6 +105,11 @@ const resolvers = {
         deleteGame(_, args) {
             console.log('mutation triggered args', args);
             _db.games = _db.games.filter((game) => game.id !== args.id);
+            return _db.games;
+        },
+        addGame(_, args) {
+            console.log('mutation triggered args', args);
+            _db.games.push({ id: args.id, title: args.title, platforms: args.platforms });
             return _db.games;
         }
     }
