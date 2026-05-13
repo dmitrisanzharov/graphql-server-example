@@ -1,14 +1,8 @@
-import { ApolloServer } from "@apollo/server";
-import { startStandaloneServer } from "@apollo/server/standalone";
-import _db from "./_db.js";
+import { ApolloServer } from '@apollo/server';
+import { startStandaloneServer } from '@apollo/server/standalone';
+import _db from './_db.js';
 
 const typeDefs = `#graphql 
-    type Game {
-        id: ID!
-        title: String!
-        platforms: [String!]!
-        reviews: [Review!]
-    }
 
     type Review {
         id: ID!
@@ -17,6 +11,14 @@ const typeDefs = `#graphql
         game_id: ID!
         author_id: ID!
         game: Game!
+        author: Author!
+    }
+    
+    type Game {
+        id: ID!
+        title: String!
+        platforms: [String!]!
+        reviews: [Review!]
     }
 
     type Author {
@@ -37,18 +39,21 @@ const typeDefs = `#graphql
         author(name: String!): Author
         game(id: ID!): Game
     }
+
+    type Mutation {
+        deleteGame(id: ID!): [Game]
+    }
 `;
 
 const resolvers = {
     Query: {
         author(_, args) {
-            console.log("args", args);
+            console.log('args', args);
             return _db.authors.find((author) => author.name === args.name);
         },
         games() {
             return _db.games;
         },
-
 
         reviews() {
             return _db.reviews;
@@ -69,23 +74,36 @@ const resolvers = {
     },
 
     Game: {
-        reviews(parent){
-            console.log("parent", parent);
+        reviews(parent) {
+            console.log('parent', parent);
             return _db.reviews.filter((review) => review.game_id === parent.id);
         }
     },
 
     Author: {
-        reviews(parent){
-            console.log("parent", parent);
+        reviews(parent) {
+            console.log('parent', parent);
             return _db.reviews.filter((review) => review.author_id === parent.id);
         }
     },
-    
+
     Review: {
-        game(parent){
-            console.log("parent", parent);
+        game(parent) {
+            console.log('parent', parent);
             return _db.games.find((game) => game.id === parent.game_id);
+        },
+
+        author(parent) {
+            console.log('parent', parent);
+            return _db.authors.find((author) => author.id === parent.author_id);
+        }
+    },
+
+    Mutation: {
+        deleteGame(_, args) {
+            console.log('mutation triggered args', args);
+            _db.games = _db.games.filter((game) => game.id !== args.id);
+            return _db.games;
         }
     }
 };
@@ -100,4 +118,3 @@ const { url } = await startStandaloneServer(server, {
 });
 
 console.log(`Server ready at port: ` + 4000);
-
