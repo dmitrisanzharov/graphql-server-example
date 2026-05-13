@@ -131,7 +131,7 @@ const resolvers = {
                 }
                 return game;
             })
-   
+            return _db.games
         }
     }
 };
