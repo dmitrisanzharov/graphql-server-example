@@ -42,7 +42,19 @@ const typeDefs = `#graphql
 
     type Mutation {
         deleteGame(id: ID!): [Game]
-        addGame(id: ID!, title: String!, platforms: [String!]!): [Game]
+        addGame(game: AddGameInput!): [Game]
+        updateGame(id: ID!, gameObj: UpdateGameInput!): [Game]
+    }
+
+    input AddGameInput {
+        id: ID!
+        title: String!
+        platforms: [String!]!
+    }
+
+    input UpdateGameInput {
+        title: String!
+        platforms: [String!]!
     }
 `;
 
@@ -109,8 +121,16 @@ const resolvers = {
         },
         addGame(_, args) {
             console.log('mutation triggered args', args);
-            _db.games.push({ id: args.id, title: args.title, platforms: args.platforms });
+            _db.games.push({ ...args.game, id: Math.random().toString() + 'a' });
             return _db.games;
+        },
+        updateGame(_, args) {
+            console.log('mutation triggered args', args);
+            const game = _db.games.find((game) => game.id === args.id);
+            game.title = args.gameObj.title;
+            game.platforms = args.gameObj.platforms;
+            return _db.games;
+   
         }
     }
 };
