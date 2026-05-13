@@ -125,11 +125,12 @@ const resolvers = {
             return _db.games;
         },
         updateGame(_, args) {
-            console.log('mutation triggered args', args);
-            const game = _db.games.find((game) => game.id === args.id);
-            game.title = args.gameObj.title;
-            game.platforms = args.gameObj.platforms;
-            return _db.games;
+            _db.games = _db.games.map((game) => {
+                if (game.id === args.id) {
+                    return { ...game, ...args.gameObj };
+                }
+                return game;
+            })
    
         }
     }
