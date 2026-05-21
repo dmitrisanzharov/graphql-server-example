@@ -23,6 +23,7 @@ const typeDefs = `#graphql
         content: String!
         author_id: ID!
         game_id: ID!
+        games_by_game_id: [Game!]
     }
 
     type Game {
@@ -37,6 +38,7 @@ const typeDefs = `#graphql
         id: ID!
         name: String!
         verified: Boolean!
+        authors_reviews: [Review!]!
     }
 `;
 
@@ -86,6 +88,22 @@ const resolvers = {
             console.log('Game: game_reviews');
             console.log('parent: ', parent);
             return db.reviews.filter(review => review.game_id === parent.id);
+        }
+    },
+    Author: {
+        authors_reviews: (parent, args) => {
+            console.log('---------------------------------');
+            console.log('Author: authors_reviews');
+            console.log('parent: ', parent);
+            return db.reviews.filter(review => review.author_id === parent.id);
+        }
+    },
+    Review: {
+        games_by_game_id: (parent, args) => {
+            console.log('---------------------------------');
+            console.log('Review: games_by_game_id');
+            console.log('parent: ', parent);
+            return db.games.filter(game => game.id === parent.game_id);
         }
     }
 };
