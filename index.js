@@ -5,7 +5,7 @@ import db from './db.js';
 const typeDefs = `#graphql
     type Query {
         returnString(string: String): String!
-        user: [String!]
+        justString: [String!]
 
         # whole databases 
         reviews: [Review!]
@@ -24,6 +24,7 @@ const typeDefs = `#graphql
         author_id: ID!
         game_id: ID!
         games_by_game_id: [Game!]
+        author_by_author_id: [Author!]!
     }
 
     type Game {
@@ -40,6 +41,18 @@ const typeDefs = `#graphql
         verified: Boolean!
         authors_reviews: [Review!]!
     }
+
+    type Mutation {
+        deleteGameByGameId(id: ID!): [Game!]!
+        addGame(gameObject: GameObject!): [Game!]!
+        updateGamesPlatformsByGameId(id: ID!, platforms: [String!]!): [Game!]!
+    }
+
+    input GameObject {
+        id: ID!
+        title: String!
+        platforms: [String!]!
+    }
 `;
 
 const resolvers = {
@@ -48,9 +61,9 @@ const resolvers = {
             console.log('query: returnString');
             return args.string;
         },
-        user: () => {
-            console.log('query: user');
-            return ['hello'];
+        justString: () => {
+            console.log('query: justString');
+            return ['hello from just string'];
         },
         reviews: () => {
             console.log('query: reviews');
@@ -104,6 +117,44 @@ const resolvers = {
             console.log('Review: games_by_game_id');
             console.log('parent: ', parent);
             return db.games.filter(game => game.id === parent.game_id);
+        },
+        author_by_author_id: (parent, args) => {
+            console.log('---------------------------------');
+            console.log('Review: author_by_author_id');
+            console.log('parent: ', parent);
+            return db.authors.filter(author => author.id === parent.author_id);
+        }
+    },
+    Mutation: {
+        deleteGameByGameId: (parent, args) => {
+            console.log('---------------------------------');
+            console.log('Mutation: deleteGameByGameId');
+            console.log('args: ', args);
+            db.games = db.games.filter(game => game.id !== args.id);
+            return db.games;
+        },
+        addGame: (parent, args) => {
+            console.log('---------------------------------');
+            console.log('Mutation: addGame');
+            console.log('args: ', args);
+            db.games.push({
+                id: args.gameObject.id,
+                title: args.gameObject.title,
+                platforms: args.gameObject.platforms
+            });
+            return db.games;
+        },
+        updateGamesPlatformsByGameId: (parent, args) => {
+            console.log('---------------------------------');
+            console.log('Mutation: updateGamesPlatformsByGameId');
+            console.log('args: ', args);
+            db.games = db.games.map(game => {
+                if (game.id === args.id) {
+                    return { ...game, platforms: args.platforms };
+                }
+                return game;
+            });
+            return db.games;
         }
     }
 };
