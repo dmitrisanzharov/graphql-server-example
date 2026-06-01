@@ -59,7 +59,6 @@ const typeDefs = `#graphql
 `;
 
 const resolvers = {
-
     Query: {
         author(_, args) {
             console.log('args', args);
@@ -130,8 +129,8 @@ const resolvers = {
                     return { ...game, ...args.gameObj };
                 }
                 return game;
-            })
-            return _db.games
+            });
+            return _db.games;
         }
     }
 };
@@ -145,4 +144,6 @@ const { url } = await startStandaloneServer(server, {
     listen: { port: 4000 }
 });
 
+console.log('============================');
+console.log(`Server ready at: ${url}`);
 console.log(`Server ready at port: ` + 4000);
