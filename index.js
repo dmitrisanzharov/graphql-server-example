@@ -39,7 +39,12 @@ const resolvers = {
         games: () => _db.games,
         authors: () => _db.authors,
         varReturn: (parent, args) => args.varStr,
-        singleReview: (parent, args) => _db.reviews.filter(review => review.id === args.id),
+        singleReview: (parent, args) => {
+
+            console.log('args in singleReview', args.id)
+
+            return _db.reviews.filter(review => review.id === args.id)
+        },
         singleGame: (parent, args) => _db.games.filter(game => game.id === args.singleGameId)
     }
 };
