@@ -8,6 +8,7 @@ const typeDefs = `#graphql
         reviews: [Reviews!]!
         games: [Game!]!
         authors: [Author!]!
+        varReturn(varStr: String!): String!
     }
 
     type Game {
@@ -34,7 +35,8 @@ const resolvers = {
         foo: () => 'bar',
         reviews: () => _db.reviews,
         games: () => _db.games,
-        authors: () => _db.authors
+        authors: () => _db.authors,
+        varReturn: (parent, args) => args.varStr
     }
 };
 
@@ -46,10 +48,9 @@ const server = new ApolloServer({
 const apollo = await startStandaloneServer(server, {
     listen: { port: 4000 }
 });
-console.log('apollo', apollo);
 
-// console.log('============================');
-// console.log(`Server ready at: ${url}`);
+console.log('============================');
+console.log(`Server ready at: ${apollo.url}`);
 // console.log(`Server ready at port: ` + 4000);
 
 
