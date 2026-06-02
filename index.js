@@ -9,6 +9,8 @@ const typeDefs = `#graphql
         games: [Game!]!
         authors: [Author!]!
         varReturn(varStr: String!): String!
+        singleReview(id: ID!): [Reviews!]!
+        singleGame(singleGameId: ID!): [Game!]!
     }
 
     type Game {
@@ -36,7 +38,9 @@ const resolvers = {
         reviews: () => _db.reviews,
         games: () => _db.games,
         authors: () => _db.authors,
-        varReturn: (parent, args) => args.varStr
+        varReturn: (parent, args) => args.varStr,
+        singleReview: (parent, args) => _db.reviews.filter(review => review.id === args.id),
+        singleGame: (parent, args) => _db.games.filter(game => game.id === args.singleGameId)
     }
 };
 
