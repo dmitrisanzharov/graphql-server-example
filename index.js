@@ -8,7 +8,14 @@ const port = 4000;
 const typeDefs = `#graphql 
 
     type Mutation {
-        deleteGameById(id: !ID): Game!
+        deleteGameById(gameId: ID!): [Game!]!
+        addGame(gameArgs: GameArgs): [Game!]!
+        updateGameNameById(gameId: ID!, name: String!): [Game!]!
+    }
+
+    input GameArgs {
+        title: String!,
+        platforms: [String!]!
     }
 
 
@@ -59,6 +66,29 @@ const typeDefs = `#graphql
 `;
 
 const resolvers = {
+    Mutation: {
+        deleteGameById: (parent, args) => {
+            return _db.games.filter(game => game.id !== args.gameId)
+        },
+        addGame: (patent, args) => {
+            console.log('args', args);
+            const newGame = { id: `${Math.random().toFixed(2)}`, ...args.gameArgs};
+            _db.games.push(newGame);
+            return _db.games;
+        },
+        updateGameNameById: (parent, args) => {
+            const {gameId, name} = args; 
+            console.log("name: ", name);
+            console.log("id: ", gameId);
+            return _db.games.map(game => {
+                if(game.id === gameId){
+                    console.log('triggered')
+                    return { ...game, title: name}
+                }
+                return game
+            })
+        }
+    },
     Query: {
         fooStr: () => 'omg it worked',
         sayHi: () => 'hi',
