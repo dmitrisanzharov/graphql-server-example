@@ -7,6 +7,11 @@ const port = 4000;
 
 const typeDefs = `#graphql 
 
+    type Mutation {
+        deleteGameById(id: !ID): Game!
+    }
+
+
     type Query {
         fooStr: String!
         sayHi: String!
@@ -15,12 +20,21 @@ const typeDefs = `#graphql
         gamesArr: [Game!]!
         singleGameById(id: ID!): Game!
         authorById(id: ID!): Author
+        barObject: Bar
+    }
+
+    type Bar {
+        name: String
+        age: Int
+        extraValue: String
     }
 
     type Game {
         id: ID!
         title: String!
         platforms: [String!]!
+        gameReviews: [Review!]
+        foo: String
     }
 
     type Review {
@@ -29,6 +43,7 @@ const typeDefs = `#graphql
         content: String!
         game_id: ID!
         author_id: ID!
+        authorsBasedOnThisReview: Author
     }
 
     type Author {
@@ -49,17 +64,39 @@ const resolvers = {
         sayHi: () => 'hi',
         reviewsArr: () => _db.reviews,
         authorsArr: () => _db.authors,
-        gamesArr: () => _db.games,
+        gamesArr: () => {
+            console.log('start of loop');
+            return _db.games
+        },
         singleGameById: (parent, args) => {
             return _db.games.find(game => game.id === args.id)
         },
         authorById: (parent, args) => {
             return _db.authors.find(author => author.id === args.id)
+        },
+        barObject: () => {
+            return { extraValue: 'omg'}
         }
+    },
+    Bar: {
+        name: () => 'bar',
+        age: () => 10
     },
     Author: {
         thisAuthorsReviews: (parent) => {
             return _db.reviews.filter(review => review.author_id === parent.id)
+        }
+    },
+    Game: {
+        gameReviews: (parent) => {
+            console.log('============================');
+            console.log('iteration');
+            return _db.reviews.filter(review => review.game_id === parent.id)
+        }
+    },
+    Review: {
+        authorsBasedOnThisReview: (parent) => {
+            return _db.authors.find(author => author.id === parent.author_id)
         }
     }
 };
