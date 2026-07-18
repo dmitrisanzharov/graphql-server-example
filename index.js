@@ -2,12 +2,54 @@ import { ApolloServer } from '@apollo/server';
 import { startStandaloneServer } from '@apollo/server/standalone';
 import _db from './_db.js';
 
+const PORT = 4000;
+
 const typeDefs = `#graphql 
 
+    type Query {
+        foo: String!
+        games: [Game!]!
+        reviews: [Review!]!
+        authors: [Author!]
+        fooWithVars(fooVar: String!): String!
+        singleReview(reviewId: ID!, reviewArg2: String): Review
+    }
+
+    type Game {
+        id: ID!
+        title: String!
+        platforms: [String!]!
+        anyKey: String
+    }
+
+    type Review {
+        id: ID!
+        rating: Int!
+        content: String!
+        game_id: ID!
+        author_id: ID!
+    }
+
+    type Author {
+        id: ID!
+        name: String!
+        verified: Boolean!
+    }
 
 `;
 
 const resolvers = {
+    Query: {
+        foo: () => 'bar',
+        games: () => _db.games,
+        reviews: () => _db.reviews,
+        authors: () => _db.authors,
+        fooWithVars: (_, args) => args.fooVar,
+        singleReview: (_, args) => {
+            console.log('args', args);
+            return _db.reviews.find((review) => review.id === args.reviewId)
+        },
+    }
 };
 
 const server = new ApolloServer({
@@ -16,7 +58,7 @@ const server = new ApolloServer({
 });
 
 const { url } = await startStandaloneServer(server, {
-    listen: { port: 4000 }
+    listen: { port: PORT }
 });
 
-console.log(`Server ready at port: ` + 4000);
+console.log(`Server ready at port: ` + PORT);
