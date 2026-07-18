@@ -12,7 +12,8 @@ const typeDefs = `#graphql
         reviews: [Review!]!
         authors: [Author!]
         fooWithVars(fooVar: String!): String!
-        singleReview(reviewId: ID!, reviewArg2: String): Review
+        singleReview(reviewId: ID!,): Review
+        qryWithArgs(argFromTypeDef1: String!, argFromTypeDef2: String!): [String!]
     }
 
     type Game {
@@ -49,7 +50,11 @@ const resolvers = {
             console.log('args', args);
             return _db.reviews.find((review) => review.id === args.reviewId)
         },
-    }
+        qryWithArgs: (_, args) => {
+            console.log('args in qryWithArgs', args);
+            return [args.argFromTypeDef1, args.argFromTypeDef2]
+        }
+    },
 };
 
 const server = new ApolloServer({
